@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trợ Lý Soạn Kịch Bản Gặp Khách Hàng - GQS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            gqs: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: #f4f7f6;
+      color: #1e293b;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    /* Print optimization */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .print-full {
+        width: 100% !important;
+        max-width: 100% !important;
+        grid-column: span 12 / span 12 !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .tab-panel {
+        display: block !important;
+        page-break-inside: avoid;
+        margin-bottom: 1.5rem;
+        border: 1px solid #cbd5e1 !important;
+        padding: 1rem !important;
+        border-radius: 0.5rem !important;
+      }
+      .tab-print-header {
+        display: block !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #064e3b;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP HEADER & TOOLBAR -->
+  <header class="bg-gradient-to-r from-gqs-900 via-gqs-800 to-teal-900 text-white shadow-md sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <!-- Brand -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-400 text-gqs-950 font-extrabold flex items-center justify-center text-lg shadow-inner shrink-0">
+            GQS
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">
+                Trợ Lý Soạn Kịch Bản Gặp Khách Hàng - GQS
+              </h1>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30">
+                B2B / B2G Sales Copilot
+              </span>
+            </div>
+            <p class="text-xs text-emerald-100/80 hidden sm:block">
+              Công ty TNHH Giải Pháp Chất Lượng GQS • Đồng bộ trực tiếp Google Sheet "Sổ tay văn bảng"
+            </p>
+          </div>
+        </div>
+
+        <!-- Toolbar Actions -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Sync Status Badge -->
+          <div id="syncStatusBadge" class="flex items-center gap-1.5 text-xs bg-white/10 px-2.5 py-1.5 rounded-lg border border-white/15">
+            <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            <span id="syncText" class="text-emerald-50 font-medium">Đang kết nối...</span>
+          </div>
+
+          <button onclick="syncFromGoogleSheet(true)" id="btnSync" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-gqs-950 font-semibold text-xs transition shadow-sm cursor-pointer">
+            <svg id="syncIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <span>Đồng bộ từ Sổ tay văn bảng</span>
+          </button>
+
+          <a href="https://docs.google.com/spreadsheets/d/1ylDtCcAsxxaXBDlu6KpBgS0hGsV9smlXnn8dMee0ZU4/edit?usp=drive_link" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition border border-white/15">
+            <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Sổ tay văn bảng</span>
+          </a>
+
+          <a href="https://drive.google.com/drive/folders/1b_UXOG8fp-oE_E7mHbnVujItlVJyZLHC?usp=drive_link" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition border border-white/15">
+            <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+            <span>Folder PDF gốc</span>
+          </a>
+
+          <button onclick="openPasteModal()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition border border-white/15 cursor-pointer" title="Nhập nhanh dữ liệu TSV nếu mất kết nối">
+            <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            <span class="hidden sm:inline">Nhập TSV tạm</span>
+          </button>
+
+          <button onclick="openCompanyModal()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 text-xs font-medium transition border border-amber-400/30 cursor-pointer">
+            <span>Hồ sơ GQS</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRINT HEADER (ONLY VISIBLE WHEN PRINTING) -->
+  <div class="hidden print-only border-b-2 border-gqs-800 pb-3 mb-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-xl font-bold text-gqs-900">KỊCH BẢN LÀM VIỆC KHÁCH HÀNG B2B / B2G - GQS</h1>
+        <p class="text-xs text-slate-600 mt-0.5">Công ty TNHH Giải Pháp Chất Lượng GQS • 72B/2, KV5, P. An Bình, TP. Cần Thơ • ĐT: 0907 692 786</p>
+      </div>
+      <div class="text-right text-xs text-slate-600" id="printMetaDate"></div>
+    </div>
+    <div id="printContextSummary" class="mt-2 p-2 bg-slate-100 rounded text-xs"></div>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- LEFT COLUMN: FILTERS & CONTEXT SETUP (4 COLS ON DESKTOP) -->
+      <aside class="lg:col-span-4 space-y-4 no-print">
+
+        <!-- QUICK PRIORITY BUTTON: VĨNH LONG -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300/80 rounded-2xl p-3.5 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              Chiến dịch trọng điểm tuần này
+            </span>
+            <span id="quickFilterStatus" class="hidden text-[11px] font-semibold bg-amber-600 text-white px-2 py-0.5 rounded-full">Đang bật</span>
+          </div>
+          <button onclick="applyVinhLongQuickFilter()" id="btnVinhLongQuick" class="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+            <span>⚡ Ưu tiên Rất cao - Vĩnh Long (Tuần này)</span>
+          </button>
+          <p class="text-[11px] text-amber-900/80 mt-2 leading-relaxed">
+            Tự động chọn <strong>Tỉnh Vĩnh Long</strong>, cập nhật nông sản đặc trưng (Khóm Trà Ôn / Bưởi Năm Roi / Cam sành / Lúa gạo), lọc <strong>Ưu tiên = Rất cao</strong> & ghim QĐ 31/2026, mốc 15/12.
+          </p>
+        </div>
+
+        <!-- CONFIGURATION FORM CARD -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4 sm:p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-gqs-100 text-gqs-700 flex items-center justify-center text-xs font-extrabold">1</span>
+              Thiết lập Địa bàn & Đầu việc
+            </h2>
+            <button onclick="resetFilters()" class="text-xs text-slate-500 hover:text-gqs-700 underline cursor-pointer">Đặt lại</button>
+          </div>
+
+          <!-- 1. TỈNH / THÀNH PHỐ -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">
+              Tỉnh / Thành phố <span class="text-rose-500">*</span>
+            </label>
+            <select id="selectProvince" onchange="handleProvinceChange()" class="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3 py-2 text-sm font-semibold text-slate-800 focus:border-gqs-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-gqs-500/20">
+              <option value="Vĩnh Long" selected>Tỉnh Vĩnh Long (Mặc định)</option>
+              <option value="An Giang">Tỉnh An Giang</option>
+              <option value="TP. Cần Thơ">TP. Cần Thơ</option>
+              <option value="Đồng Tháp">Tỉnh Đồng Tháp</option>
+              <option value="Sóc Trăng">Tỉnh Sóc Trăng</option>
+              <option value="Hậu Giang">Tỉnh Hậu Giang</option>
+              <option value="Trà Vinh">Tỉnh Trà Vinh</option>
+              <option value="Bến Tre">Tỉnh Bến Tre</option>
+              <option value="Kiên Giang">Tỉnh Kiên Giang</option>
+              <option value="Bạc Liêu">Tỉnh Bạc Liêu</option>
+              <option value="Cà Mau">Tỉnh Cà Mau</option>
+              <option value="Long An">Tỉnh Long An</option>
+              <option value="Tiền Giang">Tỉnh Tiền Giang</option>
+            </select>
+          </div>
+
+          <!-- 2. HUYỆN / XÃ -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">Huyện / Thị xã / Xã trọng điểm</label>
+              <span class="text-[11px] text-gqs-700 font-medium">Gợi ý theo tỉnh</span>
+            </div>
+            <input type="text" id="inputDistrict" oninput="renderAll()" placeholder="Nhập hoặc chọn Huyện/Xã..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:border-gqs-600 focus:outline-none focus:ring-2 focus:ring-gqs-500/20" />
+            <!-- Quick Chips for District -->
+            <div id="districtChips" class="flex flex-wrap gap-1.5 mt-2"></div>
+          </div>
+
+          <!-- 3. NÔNG SẢN / SẢN PHẨM CHỦ LỰC -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">Nông sản / Sản phẩm chủ lực</label>
+              <span id="productBadgeProvince" class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Chuẩn Vĩnh Long</span>
+            </div>
+            <textarea id="inputProduct" rows="2" oninput="renderAll()" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm text-slate-800 font-medium focus:border-gqs-600 focus:outline-none focus:ring-2 focus:ring-gqs-500/20 leading-relaxed"></textarea>
+            <div id="productChips" class="flex flex-wrap gap-1 mt-1.5"></div>
+          </div>
+
+          <!-- 4. ĐỘ ƯU TIÊN (CỘT L) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-slate-100">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Mức độ ưu tiên (Cột L)</label>
+              <select id="selectPriority" onchange="filterTasksDropdown()" class="w-full rounded-xl border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-800 focus:border-gqs-600 focus:outline-none">
+                <option value="ALL">Tất cả mức ưu tiên</option>
+                <option value="Rất cao">🔥 Rất cao</option>
+                <option value="Cao">⭐ Cao</option>
+                <option value="Trung bình">Trung bình</option>
+              </select>
+            </div>
+
+            <!-- 5. CHỦ ĐỀ (CỘT A) -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Chủ đề (Cột A)</label>
+              <select id="selectTopic" onchange="filterTasksDropdown()" class="w-full rounded-xl border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-800 focus:border-gqs-600 focus:outline-none">
+                <option value="ALL">Tất cả chủ đề</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 6. ĐẦU VIỆC CỤ THỂ TỪ GOOGLE SHEET (CỘT B) -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-bold text-slate-700">
+                Đầu việc cụ thể ("Anh muốn làm gì?")
+              </label>
+              <span id="taskCountLabel" class="text-[11px] font-semibold text-gqs-700 bg-gqs-50 px-2 py-0.5 rounded-full">0 đầu việc</span>
+            </div>
+            <!-- Search box inside tasks -->
+            <input type="text" id="searchTaskInput" oninput="filterTasksDropdown()" placeholder="Tìm nhanh từ khóa (VD: nhãn hiệu, lúa, OCOP, 31/2026)..." class="w-full rounded-t-xl border border-b-0 border-slate-300 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 focus:bg-white focus:outline-none" />
+            <select id="selectTask" onchange="handleTaskChange()" size="5" class="w-full rounded-b-xl border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-800 focus:border-gqs-600 focus:outline-none leading-snug">
+            </select>
+          </div>
+
+          <!-- 7. ĐỐI TƯỢNG KHÁCH HÀNG GẶP TRỰC TIẾP -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Đối tượng khách hàng gặp trực tiếp</label>
+            <select id="selectCustomerType" onchange="renderAll()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm font-medium text-slate-800 focus:border-gqs-600 focus:outline-none">
+              <option value="Sở Nông nghiệp & Môi trường / Trung tâm DVKT Nông nghiệp / Chi cục">Cơ quan chuyên môn cấp Tỉnh (Sở NN&MT / TT DVKT NN / Chi cục)</option>
+              <option value="Ban Quản lý Dự án ĐTXD / Phòng Kinh tế - Hạ tầng">Ban QLDA ĐTXD / Phòng Kinh tế - Hạ tầng</option>
+              <option value="UBND Xã / Cán bộ Nông nghiệp - NTM - OCOP xã">UBND Xã / Cán bộ phụ trách NTM - OCOP xã</option>
+              <option value="Hợp tác xã (HTX) / Tổ hợp tác nông nghiệp">Hợp tác xã (HTX) / Tổ hợp tác nông nghiệp</option>
+              <option value="Chủ thể OCOP / Cơ sở sản xuất - chế biến nông sản">Chủ thể OCOP / Cơ sở sản xuất - chế biến</option>
+              <option value="Doanh nghiệp liên kết chuỗi giá trị / Xuất khẩu">Doanh nghiệp liên kết chuỗi giá trị / Xuất khẩu</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- EXTRA TABS PREVIEW: QUY TRÌNH HỒ SƠ & MỐC THỜI GIAN -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 p-4">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-gqs-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Mốc thời gian & Quy trình bổ sung
+            </h3>
+            <span id="extraSheetCount" class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Đang tải...</span>
+          </div>
+          <div id="milestonesBox" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+            <!-- Populated from Móc thời gian / Quy trình hồ sơ -->
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- RIGHT COLUMN: STRATEGY CARDS + PROVINCE PINNED NOTES + 5 SCRIPT TABS (8 COLS) -->
+      <section class="lg:col-span-8 space-y-5 print-full">
+
+        <!-- 3 STRATEGIC PRIORITY CARDS (AUTO-UPDATED BY PROVINCE) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 no-print">
+          <!-- Card 1: Địa bàn -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:border-gqs-400 transition relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center justify-center">1</span>
+              <h3 class="text-xs font-extrabold uppercase tracking-wide text-emerald-900">Làm ở địa bàn nào trước?</h3>
+            </div>
+            <div id="cardStrategyArea" class="text-xs text-slate-700 space-y-1.5 leading-relaxed"></div>
+          </div>
+
+          <!-- Card 2: Đối tượng -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:border-sky-400 transition relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-sky-50 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-800 font-extrabold text-xs flex items-center justify-center">2</span>
+              <h3 class="text-xs font-extrabold uppercase tracking-wide text-sky-900">Gặp đối tượng nào trước?</h3>
+            </div>
+            <div id="cardStrategyTarget" class="text-xs text-slate-700 space-y-1.5 leading-relaxed"></div>
+          </div>
+
+          <!-- Card 3: Dịch vụ / Đầu việc -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-sm hover:border-amber-400 transition relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-16 h-16 bg-amber-50 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 font-extrabold text-xs flex items-center justify-center">3</span>
+              <h3 class="text-xs font-extrabold uppercase tracking-wide text-amber-900">Chào đầu việc nào trước?</h3>
+            </div>
+            <div id="cardStrategyService" class="text-xs text-slate-700 space-y-1.5 leading-relaxed"></div>
+          </div>
+        </div>
+
+        <!-- PROVINCE-SPECIFIC PINNED LEGAL & EXPERIENCE BANNER (VĨNH LONG / AN GIANG ONLY) -->
+        <div id="provincePinnedBanner" class="rounded-2xl border p-4 shadow-sm transition-all">
+          <!-- Dynamically rendered for Vĩnh Long or An Giang; hidden for other provinces -->
+        </div>
+
+        <!-- MAIN SCRIPT WORKSPACE CARD -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/90 overflow-hidden">
+          
+          <!-- Selected Task Header Banner -->
+          <div class="bg-slate-900 text-white p-4 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span id="badgeTopic" class="text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    CHỦ ĐỀ
+                  </span>
+                  <span id="badgePriority" class="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    ƯU TIÊN
+                  </span>
+                  <span id="badgeDocNum" class="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-white/10 text-slate-200">
+                    Số VB: ...
+                  </span>
+                </div>
+                <h2 id="activeTaskTitle" class="text-base sm:text-lg font-bold text-white leading-snug">
+                  Đang tải đầu việc từ Sổ tay văn bảng...
+                </h2>
+                <p id="activeTaskMeta" class="text-xs text-slate-300 flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <span>📍 Tỉnh Vĩnh Long</span>
+                  <span>•</span>
+                  <span>🌱 Khóm / Bưởi Năm Roi / Cam sành</span>
+                </p>
+              </div>
+
+              <!-- Global Export / Copy Actions -->
+              <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 no-print">
+                <button onclick="copyCurrentTab()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition border border-white/15 cursor-pointer">
+                  <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                  <span>Copy tab này</span>
+                </button>
+                <button onclick="copyAllTabs()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition shadow-sm cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  <span>Copy trọn bộ</span>
+                </button>
+                <button onclick="printScript()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold transition shadow-sm cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                  <span>In / PDF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 TABS NAVIGATION -->
+          <div class="bg-slate-50 border-b border-slate-200 px-3 pt-2.5 flex overflow-x-auto gap-1.5 no-print" role="tablist">
+            <button onclick="switchTab(1)" id="tabBtn1" class="tab-btn active whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 transition cursor-pointer flex items-center gap-1.5">
+              <span>1. Lời chào & Mở đầu (60s)</span>
+            </button>
+            <button onclick="switchTab(2)" id="tabBtn2" class="tab-btn whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 transition cursor-pointer flex items-center gap-1.5">
+              <span>2. Căn cứ Công văn & Quy trình</span>
+            </button>
+            <button onclick="switchTab(3)" id="tabBtn3" class="tab-btn whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 transition cursor-pointer flex items-center gap-1.5">
+              <span>3. Bộ 6 câu hỏi khai thác</span>
+            </button>
+            <button onclick="switchTab(4)" id="tabBtn4" class="tab-btn whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 transition cursor-pointer flex items-center gap-1.5">
+              <span>4. Xử lý từ chối & Câu hỏi khó</span>
+            </button>
+            <button onclick="switchTab(5)" id="tabBtn5" class="tab-btn whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 transition cursor-pointer flex items-center gap-1.5">
+              <span>5. Checklist hồ sơ & Minh chứng</span>
+            </button>
+          </div>
+
+          <!-- TABS CONTENT AREA -->
+          <div class="p-4 sm:p-6 space-y-6">
+
+            <!-- TAB 1: LỜI CHÀO & MỞ ĐẦU (60 GIÂY) -->
+            <div id="tabPanel1" class="tab-panel">
+              <div class="hidden tab-print-header">1. LỜI CHÀO & MỞ ĐẦU (60 GIÂY)</div>
+              <div id="tabContent1" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 2: CĂN CỨ CÔNG VĂN & QUY TRÌNH -->
+            <div id="tabPanel2" class="tab-panel hidden">
+              <div class="hidden tab-print-header">2. CĂN CỨ CÔNG VĂN & QUY TRÌNH PHÁP LÝ</div>
+              <div id="tabContent2" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 3: BỘ 6 CÂU HỎI KHAI THÁC NHU CẦU -->
+            <div id="tabPanel3" class="tab-panel hidden">
+              <div class="hidden tab-print-header">3. BỘ 6 CÂU HỎI KHAI THÁC NHU CẦU THỰC TẾ</div>
+              <div id="tabContent3" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 4: XỬ LÝ TỪ CHỐI & CÂU HỎI KHÓ -->
+            <div id="tabPanel4" class="tab-panel hidden">
+              <div class="hidden tab-print-header">4. XỬ LÝ TỪ CHỐI & CÂU HỎI KHÓ</div>
+              <div id="tabContent4" class="space-y-4"></div>
+            </div>
+
+            <!-- TAB 5: CHECKLIST HỒ SƠ & MINH CHỨNG -->
+            <div id="tabPanel5" class="tab-panel hidden">
+              <div class="hidden tab-print-header">5. CHECKLIST HỒ SƠ & MINH CHỨNG CHUẨN BỊ</div>
+              <div id="tabContent5" class="space-y-4"></div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-8 py-4 text-xs text-slate-500 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>
+        <strong class="text-slate-700">Công ty TNHH Giải Pháp Chất Lượng GQS</strong> • Trụ sở: 72B/2, KV5, P. An Bình, TP. Cần Thơ
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span>Hotline: <strong class="text-gqs-700">0907 692 786</strong></span>
+        <span>•</span>
+        <span>Email: quan.bui@gqsvietnam.com</span>
+        <span>•</span>
+        <a href="https://www.gqsvietnam.com" target="_blank" class="text-gqs-700 hover:underline font-medium">www.gqsvietnam.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: PASTE TSV FALLBACK -->
+  <div id="pasteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-slate-800">Nhập nhanh dữ liệu TSV tạm (khi mất mạng / chưa đồng bộ)</h3>
+        <button onclick="closePasteModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Copy toàn bộ bảng từ tab <strong>"Tra cứu theo việc"</strong> trong Google Sheet <em>Sổ tay văn bảng</em> (đủ 14 cột từ A đến N, phân tách bằng dấu Tab) và dán vào ô bên dưới:
+      </p>
+      <textarea id="pasteTsvTextarea" rows="8" placeholder="CHỦ ĐỀ&#9;ANH MUỐN LÀM GÌ?&#9;QUY ĐỊNH / CẦN NHỚ&#9;..." class="w-full rounded-xl border border-slate-300 p-3 text-xs font-mono focus:border-gqs-600 focus:outline-none"></textarea>
+      <div class="flex justify-end gap-2">
+        <button onclick="closePasteModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer">Hủy</button>
+        <button onclick="applyPastedTsv()" class="px-4 py-2 rounded-xl bg-gqs-600 hover:bg-gqs-700 text-white text-xs font-bold cursor-pointer">Nạp dữ liệu vào ứng dụng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GQS COMPANY PROFILE & 7 CORE SERVICES -->
+  <div id="companyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-gqs-900">Công ty TNHH Giải Pháp Chất Lượng GQS</h3>
+          <p class="text-xs text-slate-500">Tổng Giám đốc: Bùi Quân • MST / Trụ sở Cần Thơ</p>
+        </div>
+        <button onclick="closeCompanyModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold cursor-pointer">&times;</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+        <div><strong>Trụ sở:</strong> 72B/2, KV5, P. An Bình, TP. Cần Thơ</div>
+        <div><strong>Điện thoại:</strong> 0907 692 786</div>
+        <div><strong>Email:</strong> quan.bui@gqsvietnam.com / support@gqsvietnam.com</div>
+        <div><strong>Website:</strong> www.gqsvietnam.com</div>
+      </div>
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-gqs-800 mb-2">7 Nhóm Dịch Vụ Cốt Lõi Của GQS</h4>
+        <ol class="space-y-2 text-xs text-slate-700 list-decimal pl-5 leading-relaxed">
+          <li><strong>Viết dự án vốn vay ODA</strong> (nghiên cứu tiền khả thi, khả thi, báo cáo đề xuất chủ trương đầu tư).</li>
+          <li><strong>Tư vấn, đào tạo, chứng nhận tiêu chuẩn trong & ngoài nước:</strong> VietGAP, Hữu cơ (TCVN), GlobalG.A.P., EU/USDA Organic, JAS, ASC, HACCP, GMP, SSOP, BRC, IFS, FSSC 22000, BAP, SRP...</li>
+          <li><strong>Liên kết chuỗi giá trị theo Nghị định 98/2018/NĐ-CP</strong> (xây dựng dự án/kế hoạch liên kết sản xuất gắn với tiêu thụ nông sản).</li>
+          <li><strong>Blockchain truy xuất nguồn gốc QRcode & Thương mại điện tử nông sản</strong> (chuẩn hóa mã vùng trồng, nhật ký điện tử, tem chống giả).</li>
+          <li><strong>Xây dựng thương hiệu OCOP cho HTX</strong> (hồ sơ đánh giá phân hạng 3–5 sao, nhãn hiệu tập thể/chứng nhận, bao bì, câu chuyện sản phẩm).</li>
+          <li><strong>Viết dự án Ngân hàng Thế giới (WB)</strong> và các tổ chức tài trợ quốc tế phát triển nông nghiệp bền vững, thích ứng biến đổi khí hậu.</li>
+          <li><strong>Nhiệm vụ KHCN, đổi mới sáng tạo, năng suất chất lượng, chuyển đổi số & hồ sơ Nông thôn mới (NTM)</strong> các cấp.</li>
+        </ol>
+      </div>
+      <div class="flex justify-end pt-2">
+        <button onclick="closeCompanyModal()" class="px-4 py-2 rounded-xl bg-gqs-700 hover:bg-gqs-800 text-white text-xs font-bold cursor-pointer">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none no-print">
+    <div class="bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-xl border border-slate-700 flex items-center gap-2 text-xs font-semibold">
+      <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span id="toastMessage">Đã sao chép kịch bản!</span>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. CẤU HÌNH NGUỒN DỮ LIỆU GOOGLE SHEET TSV & CACHE
+    // =========================================================================
+    const SHEET_URLS = {
+      tasks: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGSQl8tXV8YHvk26EaE2OKmVqhHoMhCrrNzB5u5F_G19aCPT3J1Gi15RN3PUFYFxqeNTuOwSUvMlb7/pub?gid=215581842&single=true&output=tsv',
+      procedures: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGSQl8tXV8YHvk26EaE2OKmVqhHoMhCrrNzB5u5F_G19aCPT3J1Gi15RN3PUFYFxqeNTuOwSUvMlb7/pub?gid=684641023&single=true&output=tsv',
+      milestones: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTGSQl8tXV8YHvk26EaE2OKmVqhHoMhCrrNzB5u5F_G19aCPT3J1Gi15RN3PUFYFxqeNTuOwSUvMlb7/pub?gid=1905950436&single=true&output=tsv'
+    };
+
+    const CACHE_KEYS = {
+      tasks: 'gqs_sotay_tasks_tsv_v2',
+      procedures: 'gqs_sotay_proc_tsv_v2',
+      milestones: 'gqs_sotay_mile_tsv_v2',
+      timestamp: 'gqs_sotay_sync_time_v2'
+    };
+
+    // =========================================================================
+    // 2. BỘ QUY TẮC ÁNH XẠ CHUẨN XÁC ĐỊA BÀN & NÔNG SẢN ĐẶC TRƯNG THEO TỈNH
+    // =========================================================================
+    const PROVINCE_PROFILES = {
+      'Vĩnh Long': {
+        isSpecial: true,
+        badgeLabel: 'Chuẩn Vĩnh Long',
+        districts: [
+          'Xã Hòa Bình - Huyện Trà Ôn',
+          'TX. Bình Minh',
+          'Huyện Tam Bình',
+          'Huyện Bình Tân',
+          'Huyện Vũng Liêm',
+          'Huyện Long Hồ'
+        ],
+        defaultProductText: 'Khóm (xã Hòa Bình - Trà Ôn) / Bưởi Năm Roi (Bình Minh) / Cam sành / Khoai lang (Bình Tân) / Sầu riêng / Lúa gạo',
+        productChips: [
+          'Khóm (xã Hòa Bình - Trà Ôn)',
+          'Bưởi Năm Roi (Bình Minh)',
+          'Cam sành (Tam Bình / Trà Ôn)',
+          'Khoai lang (Bình Tân)',
+          'Sầu riêng (Vũng Liêm / Long Hồ)',
+          'Lúa gạo chất lượng cao'
+        ],
+        priorityAreasSummary: [
+          '<strong>Trọng điểm 1:</strong> Xã Hòa Bình – Huyện Trà Ôn (vùng nguyên liệu <strong>khóm</strong> đang chuẩn hóa nhãn hiệu tập thể & OCOP).',
+          '<strong>Trọng điểm 2:</strong> TX. Bình Minh (<strong>Bưởi Năm Roi</strong>), Huyện Tam Bình (<strong>Cam sành</strong>), Huyện Bình Tân (<strong>Khoai lang</strong>).',
+          '<strong>Trọng điểm 3:</strong> Huyện Vũng Liêm, Long Hồ (<strong>Sầu riêng, lúa gạo</strong> & các xã phấn đấu đạt chuẩn NTM/NTM nâng cao).'
+        ],
+        pinnedExperienceShort: 'GQS đã trực tiếp thực hiện gói thầu tư vấn xây dựng Nhãn hiệu tập thể cho khóm tại xã Hòa Bình, huyện Trà Ôn (Chủ đầu tư: Trung tâm Dịch vụ Kỹ thuật Nông nghiệp Vĩnh Long).',
+        pinnedLegalHtml: `
+          <div class="bg-emerald-50/90 border-emerald-300 text-emerald-950">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-700 text-white text-[11px] font-bold">GHIM ĐẶC THÙ VĨNH LONG</span>
+                <span class="text-xs font-bold text-emerald-900">Căn cứ pháp lý & Kinh nghiệm thực chiến của GQS tại địa bàn</span>
+              </div>
+              <span class="text-[11px] font-semibold text-emerald-700 shrink-0">Mốc báo cáo xã: 15/12 hằng năm</span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-slate-800 leading-relaxed list-disc pl-5">
+              <li><strong>Quyết định số 31/2026/QĐ-UBND</strong> (hiệu lực <strong>18/04/2026</strong>) của UBND tỉnh Vĩnh Long: Quy định định mức kinh tế kỹ thuật lĩnh vực trồng trọt, chăn nuôi, thủy sản, nghề muối và đào tạo khuyến nông trên địa bàn tỉnh Vĩnh Long.</li>
+              <li><strong>Nghị quyết số 09/2025/NQ-HĐND</strong> ngày <strong>30/07/2025</strong> của HĐND tỉnh Vĩnh Long: Quy định nguyên tắc, phạm vi, định mức hỗ trợ bảo vệ đất trồng lúa trên địa bàn tỉnh Vĩnh Long.</li>
+              <li><strong>Mốc báo cáo NTM/OCOP cấp xã:</strong> Ngày <strong>15/12 hằng năm</strong> (theo TT 23/2026/TT-BNNMT, Mẫu 04 Phụ lục I).</li>
+              <li><strong>Kinh nghiệm gói thầu thực tế của GQS tại Vĩnh Long:</strong> Tư vấn xây dựng <em>Nhãn hiệu tập thể cho khóm tại xã Hòa Bình, huyện Trà Ôn</em> (Chủ đầu tư: <strong>Trung tâm Dịch vụ Kỹ thuật Nông nghiệp Vĩnh Long</strong>).</li>
+            </ul>
+          </div>
+        `
+      },
+      'An Giang': {
+        isSpecial: true,
+        badgeLabel: 'Chuẩn An Giang',
+        districts: [
+          'Huyện An Phú',
+          'Huyện Chợ Mới',
+          'Huyện Thoại Sơn',
+          'Huyện Tri Tôn',
+          'TP. Long Xuyên',
+          'TP. Châu Đốc'
+        ],
+        defaultProductText: 'Lúa gạo chất lượng cao / Thủy sản (Cá tra) / Xoài cát chu (Chợ Mới) / Rau màu / Cây dược liệu & đặc sản Bảy Núi',
+        productChips: [
+          'Lúa gạo chất lượng cao (Thoại Sơn)',
+          'Thủy sản (Cá tra)',
+          'Xoài cát chu (Chợ Mới)',
+          'Rau màu chuyên canh',
+          'Cây dược liệu & đặc sản Bảy Núi (Tri Tôn)'
+        ],
+        priorityAreasSummary: [
+          '<strong>Trọng điểm 1:</strong> Huyện An Phú & Chợ Mới (vùng chuyển đổi sản phẩm theo yêu cầu thị trường, <strong>Xoài cát chu</strong>, rau màu).',
+          '<strong>Trọng điểm 2:</strong> Huyện Thoại Sơn, TP. Long Xuyên, TP. Châu Đốc (vùng <strong>Lúa gạo chất lượng cao</strong> & <strong>Cá tra</strong> xuất khẩu).',
+          '<strong>Trọng điểm 3:</strong> Huyện Tri Tôn (vùng <strong>Cây dược liệu & đặc sản Bảy Núi</strong> gắn với Bộ tiêu chí xã NTM 2026–2030).'
+        ],
+        pinnedExperienceShort: 'GQS đã trực tiếp triển khai Gói thầu số 27(AG-LTM-CS-CQS) Tư vấn phát triển sản phẩm chuyển đổi theo yêu cầu thị trường tại huyện An Phú, An Giang (Chủ đầu tư: Ban QLDA ĐTXD công trình giao thông và nông nghiệp tỉnh An Giang).',
+        pinnedLegalHtml: `
+          <div class="bg-sky-50/90 border-sky-300 text-sky-950">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-sky-700 text-white text-[11px] font-bold">GHIM ĐẶC THÙ AN GIANG</span>
+                <span class="text-xs font-bold text-sky-900">Căn cứ tiêu chí & Kinh nghiệm dự án của GQS tại An Giang</span>
+              </div>
+              <span class="text-[11px] font-semibold text-sky-700 shrink-0">Giai đoạn 2026–2030</span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-slate-800 leading-relaxed list-disc pl-5">
+              <li><strong>Bộ tiêu chí xã nông thôn mới tỉnh An Giang giai đoạn 2026–2030</strong> (trọng tâm các chỉ tiêu về tổ chức sản xuất, liên kết chuỗi, chuẩn hóa vùng nguyên liệu và chuyển đổi số nông nghiệp).</li>
+              <li><strong>Kinh nghiệm gói thầu thực tế của GQS tại An Giang:</strong> <em>Gói thầu số 27(AG-LTM-CS-CQS)</em> – Tư vấn phát triển sản phẩm chuyển đổi theo yêu cầu thị trường (chuẩn hóa quy trình, kiểm soát chất lượng, truy xuất nguồn gốc, xây dựng thương hiệu) tại <strong>huyện An Phú, An Giang</strong> (Chủ đầu tư: <strong>Ban QLDA ĐTXD công trình giao thông và nông nghiệp tỉnh An Giang</strong>).</li>
+            </ul>
+          </div>
+        `
+      }
+    };
+
+    const NEUTRAL_PROFILE = {
+      isSpecial: false,
+      badgeLabel: 'Gợi ý ĐBSCL',
+      districts: [],
+      defaultProductText: 'Lúa gạo / Trái cây đặc sản / Thủy sản / Sản phẩm OCOP địa phương',
+      productChips: [
+        'Lúa gạo chất lượng cao',
+        'Trái cây đặc sản địa phương',
+        'Thủy sản nuôi trồng',
+        'Sản phẩm OCOP địa phương'
+      ],
+      priorityAreasSummary: [
+        '<strong>Vùng nguyên liệu tập trung:</strong> Các huyện/xã có vùng chuyên canh <strong>lúa gạo, trái cây đặc sản, thủy sản</strong> quy mô lớn của tỉnh.',
+        '<strong>Xã xây dựng NTM / NTM nâng cao:</strong> Các xã cần hoàn thiện tiêu chí tổ chức sản xuất, hợp tác xã và sản phẩm OCOP.',
+        '<strong>Cụm HTX & Doanh nghiệp chế biến:</strong> Các đơn vị có nhu cầu chuẩn hóa VietGAP/GlobalG.A.P., truy xuất nguồn gốc QRcode và liên kết chuỗi NĐ 98.'
+      ],
+      pinnedExperienceShort: 'GQS có kinh nghiệm dày dặn triển khai các gói thầu tư vấn chuẩn hóa quy trình, xây dựng nhãn hiệu tập thể, phát triển sản phẩm OCOP, truy xuất nguồn gốc và liên kết chuỗi giá trị tại các tỉnh ĐBSCL.',
+      pinnedLegalHtml: ''
+    };
+
+    function getProvinceProfile(provinceName) {
+      return PROVINCE_PROFILES[provinceName] || NEUTRAL_PROFILE;
+    }
+
+    // =========================================================================
+    // 3. DỮ LIỆU MẪU FALLBACK (DÙNG KHI MẤT MẠNG & CHƯA CÓ CACHE)
+    // =========================================================================
+    const FALLBACK_TSV = `CHỦ ĐỀ\tANH MUỐN LÀM GÌ?\tQUY ĐỊNH / CẦN NHỚ\tCÁC BƯỚC THỰC HIỆN (TÓM TẮT)\tCẦN CHUẨN BỊ / MINH CHỨNG\tĐẦU MỐI / CƠ QUAN\tSỐ VĂN BẢN\tNGÀY BAN HÀNH\tNGÀY HIỆU LỰC (THAM KHẢO)\tHẾT HẠN / PHẠM VI THỜI GIAN\tĐIỀU / TRANG TRA CỨU\tƯU TIÊN\tLƯU Ý KIỂM CHỨNG\tTÊN FILE PDF GỐC
+OCOP\tĐánh giá, phân hạng và công nhận lại sản phẩm OCOP (3 sao, 4 sao) cho HTX / Chủ thể\tGiấy chứng nhận OCOP có giá trị 36 tháng kể từ ngày ký; chủ thể cần nộp hồ sơ đánh giá lại trước khi hết hạn; UBND xã tổng hợp báo cáo định kỳ ngày 15/12 hằng năm.\t1. Rà soát điều kiện sản phẩm & vùng nguyên liệu.\n2. Hoàn thiện hồ sơ tự đánh giá theo Bộ tiêu chí OCOP.\n3. Nộp hồ sơ qua UBND cấp xã để kiểm tra thực tế và trình Hội đồng đánh giá.\n4. Hoàn thiện minh chứng bao bì, truy xuất nguồn gốc, ATTP.\t- Phiếu đăng ký tham gia chương trình OCOP.\n- Báo cáo mô tả sản phẩm & câu chuyện sản phẩm.\n- Hồ sơ ATTP / Công bố chất lượng / Kiểm nghiệm.\n- Giấy chứng nhận OCOP cũ (nếu đánh giá lại, thời hạn 36 tháng).\tUBND xã / Phòng Kinh tế - Hạ tầng / Sở Nông nghiệp & Môi trường\tTT 23/2026/TT-BNNMT\t2026\t2026\tHằng năm (Báo cáo xã 15/12)\tMẫu 04 Phụ lục I\tRất cao\tCần kiểm chứng trực tiếp mẫu biểu mới nhất và mức kinh phí hỗ trợ cụ thể của từng địa phương trong dự toán năm; không tự cam kết mức hỗ trợ 100% nếu chưa đối chiếu nghị quyết tỉnh.\tTT_23_2026_TT_BNNMT.pdf
+HTX & CHUỖI\tXây dựng Nhãn hiệu tập thể / Nhãn hiệu chứng nhận & Chuẩn hóa quy trình sản xuất cho đặc sản địa phương\tGắn chặt quy chế quản lý sử dụng nhãn hiệu tập thể với quy trình kỹ thuật canh tác đồng nhất, kiểm soát chất lượng và truy xuất nguồn gốc.\t1. Khảo sát vùng trồng, thống nhất quy chế quản lý nhãn hiệu tập thể.\n2. Thiết kế bộ nhận diện thương hiệu, bao bì, tem truy xuất QR.\n3. Nộp đơn đăng ký sở hữu trí tuệ tại Cục SHTT.\n4. Tập huấn quy trình sản xuất chuẩn cho thành viên HTX.\t- Danh sách thành viên HTX / Tổ hợp tác tham gia.\n- Bản đồ khoanh vùng địa lý vùng nguyên liệu.\n- Quy chế sử dụng nhãn hiệu tập thể.\n- Quy trình kỹ thuật canh tác chuẩn.\tTrung tâm Dịch vụ Kỹ thuật Nông nghiệp / Sở KH&CN / UBND xã\tQĐ 31/2026/QĐ-UBND\t2026\t18/04/2026\tÁp dụng từ 18/04/2026\tĐịnh mức KTKT trồng trọt & khuyến nông\tRất cao\tKiểm chứng kỹ phạm vi áp dụng định mức kinh tế kỹ thuật theo QĐ 31/2026/QĐ-UBND đối với từng loại cây trồng và nội dung đào tạo khuyến nông trước khi lập dự toán.\tQD_31_2026_QD_UBND_VinhLong.pdf
+ĐẤT LÚA\tLập phương án & hồ sơ hỗ trợ bảo vệ, phát triển đất trồng lúa trên địa bàn tỉnh Vĩnh Long\tHỗ trợ đúng nguyên tắc, phạm vi và định mức quy định cho người sử dụng đất trồng lúa, HTX và địa phương thực hiện chuyển đổi cơ cấu cây trồng, áp dụng tiến bộ kỹ thuật.\t1. Rà soát diện tích đất chuyên trồng lúa đủ điều kiện hỗ trợ.\n2. Tổng hợp nhu cầu hỗ trợ giống, phân bón, quy trình canh tác bền vững.\n3. Lập phương án trình cơ quan chuyên môn thẩm định và giải ngân.\t- Danh sách hộ/HTX và diện tích đất trồng lúa được xác nhận.\n- Kế hoạch/phương án sử dụng kinh phí hỗ trợ bảo vệ đất lúa.\n- Biên bản nghiệm thu mô hình/vật tư (nếu có).\tUBND xã / Phòng Nông nghiệp & Môi trường / Sở NN&MT Vĩnh Long\t09/2025/NQ-HĐND\t30/07/2025\t2025 - 2026\tĐiều 1, 2, 3 NQ 09/2025\tRất cao\tCần đối chiếu nguồn phân bổ ngân sách hằng năm tại cấp xã/huyện; không suy diễn mức hỗ trợ cố định nếu văn bản hướng dẫn triển khai của UBND tỉnh có điều chỉnh.\tNQ_09_2025_NQ_HDND_VinhLong.pdf
+NTM\tHoàn thiện tiêu chí Tổ chức sản xuất & Phát triển kinh tế nông thôn trong xây dựng Xã Nông thôn mới (2026–2030)\tXã NTM / NTM nâng cao phải có HTX hoạt động hiệu quả, có mô hình liên kết sản xuất gắn với tiêu thụ sản phẩm chủ lực và ứng dụng truy xuất nguồn gốc.\t1. Đánh giá hiện trạng tiêu chí số 13 (Tổ chức sản xuất).\n2. Kiện toàn hoạt động HTX và ký kết hợp đồng liên kết chuỗi.\n3. Xây dựng vùng nguyên liệu đạt chuẩn VietGAP / mã số vùng trồng.\n4. Hoàn thiện hồ sơ minh chứng phục vụ thẩm định NTM.\t- Hồ sơ hoạt động HTX theo Luật HTX.\n- Hợp đồng liên kết sản xuất & tiêu thụ nông sản.\n- Chứng nhận VietGAP / Mã số vùng trồng / QR truy xuất nguồn gốc.\n- Báo cáo kết quả thực hiện tiêu chí NTM của xã.\tUBND xã / Văn phòng Điều phối NTM / Sở NN&MT\tBộ tiêu chí NTM 2026-2030\t2026\t2026\tGiai đoạn 2026–2030\tTiêu chí Tổ chức sản xuất\tRất cao\tKiểm chứng bộ chỉ tiêu cụ thể do UBND từng tỉnh ban hành cho giai đoạn 2026–2030 (như Bộ tiêu chí xã NTM An Giang 2026–2030).\tBo_Tieu_Chi_NTM_2026_2030.pdf
+HTX & CHUỖI\tLập dự án / kế hoạch liên kết sản xuất và tiêu thụ sản phẩm nông nghiệp theo Nghị định 98/2018/NĐ-CP\tChủ trì liên kết (Doanh nghiệp hoặc HTX) lập dự án/kế hoạch liên kết có hợp đồng ổn định tối thiểu 3–5 năm tùy quy mô để được xem xét hỗ trợ hạ tầng, giống, vật tư, tư vấn.\t1. Thống nhất phương án liên kết giữa Doanh nghiệp và HTX/nông dân.\n2. Soạn thảo Dự án hoặc Kế hoạch liên kết theo mẫu NĐ 98.\n3. Nộp hồ sơ đề nghị phê duyệt và hỗ trợ tại cơ quan chuyên môn.\t- Đơn đề nghị hỗ trợ dự án/kế hoạch liên kết.\n- Dự án hoặc Kế hoạch liên kết chuỗi giá trị.\n- Hợp đồng liên kết & Danh sách nông dân/HTX tham gia.\n- Báo giá/dự toán hạng mục đề nghị hỗ trợ.\tSở Nông nghiệp & Môi trường / UBND cấp huyện, xã\t98/2018/NĐ-CP\t05/07/2018\t20/08/2018\tĐang có hiệu lực\tĐiều 4, 5, 6, 7 NĐ 98\tCao\tTỷ lệ hỗ trợ trong NĐ 98 là mức tối đa (ví dụ tư vấn xây dựng liên kết tối đa 100% nhưng không quá 300 triệu đồng); mức duyệt thực tế phụ thuộc Nghị quyết HĐND từng tỉnh và nguồn vốn bố trí.\tND_98_2018_ND_CP.pdf`;
+
+    // =========================================================================
+    // 4. STATE QUẢN LÝ ỨNG DỤNG
+    // =========================================================================
+    let appState = {
+      tasks: [],
+      procedures: [],
+      milestones: [],
+      selectedProvince: 'Vĩnh Long',
+      selectedDistrict: '',
+      selectedProduct: '',
+      selectedPriority: 'ALL',
+      selectedTopic: 'ALL',
+      selectedTaskIndex: 0,
+      selectedCustomerType: 'Sở Nông nghiệp & Môi trường / Trung tâm DVKT Nông nghiệp / Chi cục',
+      activeTab: 1,
+      quickFilterActive: false,
+      checkedItems: {} // Lưu trạng thái tick checklist
+    };
+
+    // =========================================================================
+    // 5. PARSER TSV CHUẨN XÁC (HỖ TRỢ XUỐNG DÒNG TRONG Ô GOOGLE SHEET)
+    // =========================================================================
+    function parseTSV(tsvText) {
+      if (!tsvText || !tsvText.trim()) return [];
+      const rows = [];
+      let currentRow = [];
+      let currentField = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < tsvText.length; i++) {
+        const char = tsvText[i];
+        const nextChar = tsvText[i + 1];
+
+        if (char === '"') {
+          if (inQuotes && nextChar === '"') {
+            currentField += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === '\t' && !inQuotes) {
+          currentRow.push(currentField.trim());
+          currentField = '';
+        } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !inQuotes) {
+          if (char === '\r') i++;
+          currentRow.push(currentField.trim());
+          if (currentRow.some(cell => cell !== '')) {
+            rows.push(currentRow);
+          }
+          currentRow = [];
+          currentField = '';
+        } else {
+          currentField += char;
+        }
+      }
+
+      if (currentField !== '' || currentRow.length > 0) {
+        currentRow.push(currentField.trim());
+        if (currentRow.some(cell => cell !== '')) {
+          rows.push(currentRow);
+        }
+      }
+
+      if (rows.length < 2) return [];
+
+      // Map 14 cột chuẩn của tab "Tra cứu theo việc"
+      const dataRows = rows.slice(1);
+      return dataRows
+        .filter(r => (r[0] || r[1])) // Có Chủ đề hoặc Đầu việc
+        .map((r, idx) => ({
+          id: idx,
+          topic: (r[0] || 'CHUNG').trim(),
+          task: (r[1] || '').trim(),
+          regulation: (r[2] || '').trim(),
+          steps: (r[3] || '').trim(),
+          documents: (r[4] || '').trim(),
+          agency: (r[5] || '').trim(),
+          docNumber: (r[6] || '').trim(),
+          issueDate: (r[7] || '').trim(),
+          effectiveDate: (r[8] || '').trim(),
+          expiryScope: (r[9] || '').trim(),
+          articleRef: (r[10] || '').trim(),
+          priority: (r[11] || 'Trung bình').trim(),
+          verificationNote: (r[12] || '').trim(),
+          pdfFileName: (r[13] || '').trim()
+        }));
+    }
+
+    function parseGenericTSV(tsvText) {
+      if (!tsvText || !tsvText.trim()) return [];
+      const lines = tsvText.split(/\r?\n/).filter(l => l.trim() !== '');
+      if (lines.length < 2) return [];
+      const headers = lines[0].split('\t').map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const cols = line.split('\t').map(c => c.trim());
+        const obj = {};
+        headers.forEach((h, i) => {
+          obj[h || `Col${i}`] = cols[i] || '';
+        });
+        obj._rawCols = cols;
+        return obj;
+      });
+    }
+
+    // =========================================================================
+    // 6. ĐỒNG BỘ GOOGLE SHEET & LOCALSTORAGE CACHE
+    // =========================================================================
+    async function syncFromGoogleSheet(isManual = false) {
+      const syncDot = document.getElementById('syncDot');
+      const syncText = document.getElementById('syncText');
+      const syncIcon = document.getElementById('syncIcon');
+
+      syncDot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-ping';
+      syncText.textContent = 'Đang đồng bộ Sheet...';
+      syncIcon.classList.add('animate-spin');
+
+      try {
+        // Fetch đồng thời 3 tab TSV
+        const [tasksRes, procRes, mileRes] = await Promise.allSettled([
+          fetch(SHEET_URLS.tasks + '&_t=' + Date.now()),
+          fetch(SHEET_URLS.procedures + '&_t=' + Date.now()),
+          fetch(SHEET_URLS.milestones + '&_t=' + Date.now())
+        ]);
+
+        let loadedFromNetwork = false;
+
+        if (tasksRes.status === 'fulfilled' && tasksRes.value.ok) {
+          const tsvText = await tasksRes.value.text();
+          const parsed = parseTSV(tsvText);
+          if (parsed.length > 0) {
+            appState.tasks = parsed;
+            localStorage.setItem(CACHE_KEYS.tasks, tsvText);
+            loadedFromNetwork = true;
+          }
+        }
+
+        if (procRes.status === 'fulfilled' && procRes.value.ok) {
+          const procText = await procRes.value.text();
+          appState.procedures = parseGenericTSV(procText);
+          localStorage.setItem(CACHE_KEYS.procedures, procText);
+        }
+
+        if (mileRes.status === 'fulfilled' && mileRes.value.ok) {
+          const mileText = await mileRes.value.text();
+          appState.milestones = parseGenericTSV(mileText);
+          localStorage.setItem(CACHE_KEYS.milestones, mileText);
+        }
+
+        if (loadedFromNetwork) {
+          const nowStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+          localStorage.setItem(CACHE_KEYS.timestamp, nowStr);
+          syncDot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          syncText.textContent = `Đã đồng bộ (${appState.tasks.length} việc • ${nowStr})`;
+          if (isManual) showToast(`Đã cập nhật ${appState.tasks.length} đầu việc mới nhất từ Sổ tay văn bảng!`);
+        } else {
+          throw new Error('Không thể tải TSV từ mạng');
+        }
+      } catch (err) {
+        // Fallback sang cache localStorage hoặc dữ liệu mẫu
+        const cachedTasks = localStorage.getItem(CACHE_KEYS.tasks);
+        const cachedTime = localStorage.getItem(CACHE_KEYS.timestamp);
+        if (cachedTasks) {
+          appState.tasks = parseTSV(cachedTasks);
+          const cachedProc = localStorage.getItem(CACHE_KEYS.procedures);
+          const cachedMile = localStorage.getItem(CACHE_KEYS.milestones);
+          if (cachedProc) appState.procedures = parseGenericTSV(cachedProc);
+          if (cachedMile) appState.milestones = parseGenericTSV(cachedMile);
+
+          syncDot.className = 'w-2 h-2 rounded-full bg-sky-400';
+          syncText.textContent = `Dùng bản lưu (${appState.tasks.length} việc${cachedTime ? ' • ' + cachedTime : ''})`;
+          if (isManual) showToast('Mạng yếu: Đang sử dụng dữ liệu đã lưu trong máy.');
+        } else {
+          appState.tasks = parseTSV(FALLBACK_TSV);
+          syncDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          syncText.textContent = `Chế độ Offline (${appState.tasks.length} việc mẫu)`;
+          if (isManual) showToast('Không có kết nối mạng: Đang dùng dữ liệu mẫu tích hợp.');
+        }
+      } finally {
+        syncIcon.classList.remove('animate-spin');
+        populateTopicsDropdown();
+        filterTasksDropdown(true);
+        renderMilestonesBox();
+        renderAll();
+      }
+    }
+
+    // =========================================================================
+    // 7. XỬ LÝ THAY ĐỔI TỈNH / ĐỊA BÀN / NÔNG SẢN (QUY TẮC ÁNH XẠ NGHIÊM NGẶT)
+    // =========================================================================
+    function handleProvinceChange(preserveQuickFilter = false) {
+      const province = document.getElementById('selectProvince').value;
+      appState.selectedProvince = province;
+
+      if (!preserveQuickFilter && province !== 'Vĩnh Long') {
+        appState.quickFilterActive = false;
+        document.getElementById('quickFilterStatus').classList.add('hidden');
+      }
+
+      const profile = getProvinceProfile(province);
+
+      // 1. Cập nhật badge tỉnh ở ô Nông sản
+      const badgeEl = document.getElementById('productBadgeProvince');
+      badgeEl.textContent = profile.badgeLabel;
+      badgeEl.className = profile.isSpecial
+        ? 'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800'
+        : 'text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600';
+
+      // 2. Cập nhật ô Nông sản / Sản phẩm chủ lực theo đúng tỉnh (tuyệt đối không lẫn lộn)
+      const productInput = document.getElementById('inputProduct');
+      productInput.value = profile.defaultProductText;
+      appState.selectedProduct = profile.defaultProductText;
+
+      // 3. Render chips gợi ý Nông sản
+      const productChipsEl = document.getElementById('productChips');
+      productChipsEl.innerHTML = profile.productChips.map(prod => `
+        <button type="button" onclick="selectProductChip('${escapeHtmlAttr(prod)}')" class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 hover:bg-gqs-100 text-slate-700 hover:text-gqs-800 border border-slate-200 transition cursor-pointer">
+          + ${escapeHtml(prod)}
+        </button>
+      `).join('');
+
+      // 4. Cập nhật Huyện/Xã gợi ý & Chips Huyện/Xã
+      const districtInput = document.getElementById('inputDistrict');
+      const districtChipsEl = document.getElementById('districtChips');
+
+      if (profile.districts && profile.districts.length > 0) {
+        districtInput.value = profile.districts[0];
+        appState.selectedDistrict = profile.districts[0];
+        districtChipsEl.innerHTML = profile.districts.map(dist => `
+          <button type="button" onclick="selectDistrictChip('${escapeHtmlAttr(dist)}')" class="text-[11px] px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition cursor-pointer">
+            ${escapeHtml(dist)}
+          </button>
+        `).join('');
+      } else {
+        // Nếu chọn tỉnh khác (ĐBSCL): xóa trống gợi ý huyện/xã cũ để tránh sai lệch
+        districtInput.value = '';
+        appState.selectedDistrict = '';
+        districtChipsEl.innerHTML = `<span class="text-[11px] text-slate-400 italic">Nhập tên Huyện/Thị xã/Xã cụ thể tại ${escapeHtml(province)}</span>`;
+      }
+
+      renderAll();
+    }
+
+    function selectDistrictChip(dist) {
+      document.getElementById('inputDistrict').value = dist;
+      appState.selectedDistrict = dist;
+      renderAll();
+    }
+
+    function selectProductChip(prod) {
+      document.getElementById('inputProduct').value = prod;
+      appState.selectedProduct = prod;
+      renderAll();
+    }
+
+    // =========================================================================
+    // 8. NÚT LỌC NHANH: "⚡ ƯU TIÊN RẤT CAO - VĨNH LONG (TUẦN NÀY)"
+    // =========================================================================
+    function applyVinhLongQuickFilter() {
+      appState.quickFilterActive = true;
+      document.getElementById('quickFilterStatus').classList.remove('hidden');
+
+      // 1. Chọn Tỉnh = Vĩnh Long & cập nhật đúng nông sản + huyện/xã Vĩnh Long
+      document.getElementById('selectProvince').value = 'Vĩnh Long';
+      handleProvinceChange(true);
+
+      // 2. Đặt bộ lọc Ưu tiên = Rất cao, Chủ đề = ALL (ưu tiên sắp xếp OCOP, HTX & CHUỖI, ĐẤT LÚA, NTM lên đầu)
+      document.getElementById('selectPriority').value = 'Rất cao';
+      document.getElementById('selectTopic').value = 'ALL';
+      document.getElementById('searchTaskInput').value = '';
+
+      filterTasksDropdown(true);
+      renderAll();
+      showToast('Đã kích hoạt bộ lọc: Ưu tiên Rất cao - Vĩnh Long (Tuần này)!');
+    }
+
+    function resetFilters() {
+      appState.quickFilterActive = false;
+      document.getElementById('quickFilterStatus').classList.add('hidden');
+      document.getElementById('selectProvince').value = 'Vĩnh Long';
+      document.getElementById('selectPriority').value = 'ALL';
+      document.getElementById('selectTopic').value = 'ALL';
+      document.getElementById('searchTaskInput').value = '';
+      handleProvinceChange();
+      filterTasksDropdown(true);
+      renderAll();
+    }
+
+    // =========================================================================
+    // 9. LỌC & HIỂN THỊ DANH SÁCH CHỦ ĐỀ / ĐẦU VIỆC TỪ GOOGLE SHEET
+    // =========================================================================
+    function populateTopicsDropdown() {
+      const selectTopic = document.getElementById('selectTopic');
+      const currentVal = selectTopic.value;
+      const topics = [...new Set(appState.tasks.map(t => t.topic).filter(Boolean))];
+
+      selectTopic.innerHTML = `<option value="ALL">Tất cả chủ đề (${topics.length})</option>` +
+        topics.map(t => `<option value="${escapeHtmlAttr(t)}">${escapeHtml(t)}</option>`).join('');
+
+      if (topics.includes(currentVal)) {
+        selectTopic.value = currentVal;
+      }
+    }
+
+    function getFilteredTasks() {
+      const priorityFilter = document.getElementById('selectPriority').value;
+      const topicFilter = document.getElementById('selectTopic').value;
+      const keyword = document.getElementById('searchTaskInput').value.trim().toLowerCase();
+
+      let list = appState.tasks.filter(item => {
+        if (priorityFilter !== 'ALL') {
+          if (!item.priority.toLowerCase().includes(priorityFilter.toLowerCase())) return false;
+        }
+        if (topicFilter !== 'ALL') {
+          if (item.topic !== topicFilter) return false;
+        }
+        if (keyword) {
+          const hay = `${item.topic} ${item.task} ${item.docNumber} ${item.regulation} ${item.agency}`.toLowerCase();
+          if (!hay.includes(keyword)) return false;
+        }
+        return true;
+      });
+
+      // Nếu bật chế độ lọc nhanh Vĩnh Long, ưu tiên sắp xếp các chủ đề OCOP, HTX & CHUỖI, ĐẤT LÚA, NTM lên đầu
+      if (appState.quickFilterActive) {
+        const preferredTopics = ['OCOP', 'HTX & CHUỖI', 'ĐẤT LÚA', 'NTM'];
+        list = [...list].sort((a, b) => {
+          const idxA = preferredTopics.findIndex(p => a.topic.toUpperCase().includes(p));
+          const idxB = preferredTopics.findIndex(p => b.topic.toUpperCase().includes(p));
+          const scoreA = idxA === -1 ? 99 : idxA;
+          const scoreB = idxB === -1 ? 99 : idxB;
+          return scoreA - scoreB;
+        });
+      }
+
+      return list;
+    }
+
+    function filterTasksDropdown(selectFirst = false) {
+      const filtered = getFilteredTasks();
+      const selectTask = document.getElementById('selectTask');
+      const countLabel = document.getElementById('taskCountLabel');
+
+      countLabel.textContent = `${filtered.length} đầu việc`;
+
+      if (filtered.length === 0) {
+        selectTask.innerHTML = `<option disabled>Không tìm thấy đầu việc phù hợp bộ lọc...</option>`;
+        return;
+      }
+
+      selectTask.innerHTML = filtered.map((item, idx) => {
+        const prioIcon = item.priority.toLowerCase().includes('rất cao') ? '🔥' :
+                         item.priority.toLowerCase().includes('cao') ? '⭐' : '•';
+        const docTag = item.docNumber ? ` [${item.docNumber}]` : '';
+        return `<option value="${item.id}" ${idx === 0 && selectFirst ? 'selected' : ''}>${prioIcon} [${item.topic}] ${item.task}${docTag}</option>`;
+      }).join('');
+
+      if (selectFirst || !filtered.some(f => f.id === appState.selectedTaskIndex)) {
+        selectTask.selectedIndex = 0;
+        appState.selectedTaskIndex = filtered[0].id;
+      } else {
+        selectTask.value = appState.selectedTaskIndex;
+      }
+
+      renderAll();
+    }
+
+    function handleTaskChange() {
+      const val = parseInt(document.getElementById('selectTask').value, 10);
+      if (!isNaN(val)) {
+        appState.selectedTaskIndex = val;
+        renderAll();
+      }
+    }
+
+    function getActiveTask() {
+      return appState.tasks.find(t => t.id === appState.selectedTaskIndex) || appState.tasks[0] || null;
+    }
+
+    // =========================================================================
+    // 10. RENDER 3 THẺ CHIẾN LƯỢC ĐẦU TRANG & KHUNG GHIM ĐẶC THÙ TỈNH
+    // =========================================================================
+    function renderStrategyCards() {
+      const province = appState.selectedProvince;
+      const profile = getProvinceProfile(province);
+
+      // Card 1: Làm ở địa bàn nào trước?
+      document.getElementById('cardStrategyArea').innerHTML = `
+        <div class="font-bold text-emerald-800 mb-1">📍 Tỉnh ${escapeHtml(province)}</div>
+        <ul class="space-y-1 list-disc pl-4 text-[11px] text-slate-700">
+          ${profile.priorityAreasSummary.map(li => `<li>${li}</li>`).join('')}
+        </ul>
+      `;
+
+      // Lấy các đầu việc Rất cao / Cao từ Sổ tay văn bảng
+      const highPriorityTasks = appState.tasks.filter(t =>
+        t.priority.toLowerCase().includes('rất cao') || t.priority.toLowerCase().includes('cao')
+      );
+      const sourceTasks = highPriorityTasks.length > 0 ? highPriorityTasks : appState.tasks;
+
+      // Card 2: Gặp đối tượng nào trước? (Lấy từ cột ĐẦU MỐI / CƠ QUAN)
+      const agencies = [...new Set(sourceTasks.map(t => t.agency).filter(Boolean))].slice(0, 4);
+      document.getElementById('cardStrategyTarget').innerHTML = `
+        <div class="font-bold text-sky-800 mb-1">🤝 Lộ trình tiếp cận (Cột Đầu mối):</div>
+        <ol class="space-y-1 list-decimal pl-4 text-[11px] text-slate-700">
+          ${agencies.length > 0
+            ? agencies.map(ag => `<li><strong>${escapeHtml(ag)}</strong></li>`).join('')
+            : `<li>Cơ quan chuyên môn cấp Tỉnh -> UBND xã -> HTX / Chủ thể OCOP -> Doanh nghiệp liên kết</li>`
+          }
+        </ol>
+      `;
+
+      // Card 3: Chào dịch vụ / đầu việc nào trước? (Top đầu việc Rất cao kèm Số VB & Lưu ý)
+      const veryHighTasks = appState.tasks.filter(t => t.priority.toLowerCase().includes('rất cao'));
+      const topTasks = (veryHighTasks.length > 0 ? veryHighTasks : sourceTasks).slice(0, 3);
+
+      document.getElementById('cardStrategyService').innerHTML = `
+        <div class="font-bold text-amber-800 mb-1">🎯 Top đầu việc ưu tiên chào trước:</div>
+        <ul class="space-y-1.5 list-disc pl-4 text-[11px] text-slate-700">
+          ${topTasks.map(t => `
+            <li>
+              <span class="font-semibold text-slate-900">${escapeHtml(t.task)}</span>
+              ${t.docNumber ? `<span class="inline-block font-mono text-[10px] bg-amber-100 text-amber-900 px-1 rounded ml-1">${escapeHtml(t.docNumber)}</span>` : ''}
+              ${t.verificationNote ? `<div class="text-[10px] text-rose-700 mt-0.5">⚠️ ${escapeHtml(truncateText(t.verificationNote, 85))}</div>` : ''}
+            </li>
+          `).join('')}
+        </ul>
+      `;
+
+      // Render Banner ghim đặc thù tỉnh (Chỉ hiện cho Vĩnh Long hoặc An Giang, ẩn với tỉnh khác)
+      const bannerEl = document.getElementById('provincePinnedBanner');
+      if (profile.isSpecial && profile.pinnedLegalHtml) {
+        bannerEl.classList.remove('hidden');
+        bannerEl.className = 'rounded-2xl border p-4 shadow-sm transition-all ' +
+          (province === 'Vĩnh Long' ? 'bg-emerald-50/90 border-emerald-300' : 'bg-sky-50/90 border-sky-300');
+        bannerEl.innerHTML = profile.pinnedLegalHtml;
+      } else {
+        bannerEl.classList.add('hidden');
+        bannerEl.innerHTML = '';
+      }
+    }
+
+    function renderMilestonesBox() {
+      const box = document.getElementById('milestonesBox');
+      const countEl = document.getElementById('extraSheetCount');
+
+      const items = [];
+      // Luôn ghim mốc 15/12 theo yêu cầu
+      items.push({
+        tag: 'Mốc chuẩn',
+        title: 'Ngày 15/12 hằng năm: Hạn UBND xã gửi báo cáo năm (TT 23/2026/TT-BNNMT, Mẫu 04 Phụ lục I)',
+        color: 'bg-amber-100 text-amber-900'
+      });
+
+      appState.milestones.slice(0, 5).forEach(m => {
+        const cols = m._rawCols || [];
+        if (cols[0] || cols[1]) {
+          items.push({
+            tag: cols[0] || 'Mốc thời gian',
+            title: cols.slice(1).filter(Boolean).join(' — '),
+            color: 'bg-emerald-100 text-emerald-900'
+          });
+        }
+      });
+
+      appState.procedures.slice(0, 4).forEach(p => {
+        const cols = p._rawCols || [];
+        if (cols[0] || cols[1]) {
+          items.push({
+            tag: 'Quy trình',
+            title: cols.filter(Boolean).join(' — '),
+            color: 'bg-sky-100 text-sky-900'
+          });
+        }
+      });
+
+      countEl.textContent = `${appState.milestones.length + appState.procedures.length} mục từ Sheet`;
+
+      box.innerHTML = items.map(it => `
+        <div class="p-2 rounded-lg bg-slate-50 border border-slate-200/80">
+          <span class="inline-block text-[10px] font-bold px-1.5 py-0.5 rounded ${it.color} mb-0.5">${escapeHtml(it.tag)}</span>
+          <div class="text-[11px] text-slate-700 leading-snug">${escapeHtml(it.title)}</div>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // 11. RENDER 5 TAB KỊCH BẢN GẶP KHÁCH HÀNG B2B / B2G
+    // =========================================================================
+    function renderAll() {
+      appState.selectedProvince = document.getElementById('selectProvince').value;
+      appState.selectedDistrict = document.getElementById('inputDistrict').value.trim();
+      appState.selectedProduct = document.getElementById('inputProduct').value.trim();
+      appState.selectedCustomerType = document.getElementById('selectCustomerType').value;
+
+      renderStrategyCards();
+
+      const task = getActiveTask();
+      if (!task) return;
+
+      // Cập nhật Header của vùng kịch bản
+      document.getElementById('badgeTopic').textContent = task.topic || 'CHỦ ĐỀ';
+      document.getElementById('badgePriority').textContent = `Ưu tiên: ${task.priority || 'Tiêu chuẩn'}`;
+      document.getElementById('badgeDocNum').textContent = task.docNumber ? `Số VB: ${task.docNumber}` : 'Chưa ghi số VB';
+      document.getElementById('activeTaskTitle').textContent = task.task;
+
+      const locText = appState.selectedDistrict
+        ? `${appState.selectedDistrict}, Tỉnh ${appState.selectedProvince}`
+        : `Tỉnh ${appState.selectedProvince}`;
+
+      document.getElementById('activeTaskMeta').innerHTML = `
+        <span>📍 ${escapeHtml(locText)}</span>
+        <span>•</span>
+        <span>🌱 ${escapeHtml(appState.selectedProduct || 'Nông sản chủ lực địa phương')}</span>
+        <span>•</span>
+        <span>👤 ${escapeHtml(appState.selectedCustomerType)}</span>
+      `;
+
+      // Cập nhật thông tin in PDF
+      document.getElementById('printMetaDate').textContent = `Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}`;
+      document.getElementById('printContextSummary').innerHTML = `
+        <strong>Địa bàn:</strong> ${escapeHtml(locText)} |
+        <strong>Nông sản chủ lực:</strong> ${escapeHtml(appState.selectedProduct)} |
+        <strong>Khách hàng:</strong> ${escapeHtml(appState.selectedCustomerType)} |
+        <strong>Đầu việc:</strong> [${escapeHtml(task.topic)}] ${escapeHtml(task.task)} (${escapeHtml(task.docNumber || 'N/A')})
+      `;
+
+      renderTab1(task, locText);
+      renderTab2(task);
+      renderTab3(task, locText);
+      renderTab4(task, locText);
+      renderTab5(task);
+    }
+
+    // --- TAB 1: LỜI CHÀO & MỞ ĐẦU (60 GIÂY) ---
+    function renderTab1(task, locText) {
+      const province = appState.selectedProvince;
+      const profile = getProvinceProfile(province);
+      const product = appState.selectedProduct || 'nông sản chủ lực của địa phương';
+      const customer = appState.selectedCustomerType;
+      const docRef = task.docNumber ? `theo tinh thần văn bản <strong>${escapeHtml(task.docNumber)}</strong>` : '';
+
+      // Tạo câu dẫn kinh nghiệm dự án thực tế đúng tỉnh đang chọn
+      let experienceParagraph = '';
+      if (province === 'Vĩnh Long') {
+        experienceParagraph = `Tại tỉnh Vĩnh Long, GQS đã trực tiếp đồng hành cùng <strong>Trung tâm Dịch vụ Kỹ thuật Nông nghiệp Vĩnh Long</strong> triển khai thành công gói thầu tư vấn xây dựng <strong>Nhãn hiệu tập thể cho khóm tại xã Hòa Bình, huyện Trà Ôn</strong>, đồng thời bám sát các định mức mới tại <strong>Quyết định 31/2026/QĐ-UBND</strong> (hiệu lực 18/04/2026) và <strong>Nghị quyết 09/2025/NQ-HĐND</strong> về hỗ trợ bảo vệ đất trồng lúa.`;
+      } else if (province === 'An Giang') {
+        experienceParagraph = `Tại tỉnh An Giang, GQS đã trực tiếp thực hiện <strong>Gói thầu số 27(AG-LTM-CS-CQS)</strong> tư vấn phát triển sản phẩm chuyển đổi theo yêu cầu thị trường (chuẩn hóa quy trình, kiểm soát chất lượng, truy xuất nguồn gốc, xây dựng thương hiệu) tại <strong>huyện An Phú</strong> cho <strong>Ban QLDA ĐTXD công trình giao thông và nông nghiệp tỉnh An Giang</strong>, bám sát <strong>Bộ tiêu chí xã nông thôn mới tỉnh An Giang giai đoạn 2026–2030</strong>.`;
+      } else {
+        experienceParagraph = `Tại khu vực ĐBSCL, GQS là đơn vị chuyên sâu trong việc tư vấn chuẩn hóa quy trình (VietGAP, GlobalG.A.P., Hữu cơ), xây dựng nhãn hiệu tập thể, hồ sơ OCOP, truy xuất nguồn gốc QRcode và lập dự án liên kết chuỗi giá trị theo Nghị định 98/2018/NĐ-CP.`;
+      }
+
+      document.getElementById('tabContent1').innerHTML = `
+        <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800">Kịch bản nói trực tiếp (Thời lượng ~60 giây)</span>
+            <span class="text-[11px] text-emerald-700 font-medium">Giọng điệu: Chuyên nghiệp – Am hiểu địa phương – Thực tế</span>
+          </div>
+
+          <div class="space-y-2.5 text-sm text-slate-800 leading-relaxed bg-white p-4 rounded-xl border border-emerald-100 shadow-2xs">
+            <p>
+              <strong>1. Chào hỏi & Định vị (15 giây):</strong><br/>
+              “Dạ em chào Anh/Chị đại diện <strong>${escapeHtml(customer)}</strong>. Em là chuyên viên tư vấn từ <strong>Công ty TNHH Giải Pháp Chất Lượng GQS</strong> (trụ sở tại TP. Cần Thơ). Hôm nay em xin phép trao đổi nhanh với Anh/Chị về giải pháp triển khai đầu việc <strong>“${escapeHtml(task.task)}”</strong> ${docRef} cho vùng nguyên liệu <strong>${escapeHtml(product)}</strong> tại <strong>${escapeHtml(locText)}</strong>.”
+            </p>
+            <p>
+              <strong>2. Năng lực & Kinh nghiệm thực tế tại ${escapeHtml(province)} (25 giây):</strong><br/>
+              “${experienceParagraph}”
+            </p>
+            <p>
+              <strong>3. Giá trị mang lại & Xin phép khai thác nhu cầu (20 giây):</strong><br/>
+              “Với nhóm sản phẩm <strong>${escapeHtml(product)}</strong> ở địa bàn mình, GQS hỗ trợ trọn gói từ khâu rà soát điều kiện pháp lý, hoàn thiện hồ sơ minh chứng đến chuẩn hóa quy trình kỹ thuật và truy xuất nguồn gốc để địa phương/đơn vị thuận lợi trong nghiệm thu và giải ngân. Em xin phép hỏi nhanh Anh/Chị 5–6 ý ngắn gọn về hiện trạng tại <strong>${escapeHtml(locText)}</strong> để GQS đề xuất phương án sát nhất ạ?”
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5">
+          <h4 class="text-xs font-bold text-slate-700 uppercase mb-2">Điểm nhấn 7 dịch vụ cốt lõi của GQS có thể lồng ghép khi mở lời:</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-slate-600">
+            <div>• Tư vấn VietGAP, Hữu cơ, GlobalG.A.P., HACCP, BRC, SRP...</div>
+            <div>• Xây dựng thương hiệu OCOP, Nhãn hiệu tập thể cho HTX</div>
+            <div>• Blockchain truy xuất nguồn gốc QRcode & TMĐT nông sản</div>
+            <div>• Liên kết chuỗi NĐ 98, hồ sơ NTM, dự án KHCN / ODA / WB</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- TAB 2: CĂN CỨ CÔNG VĂN & QUY TRÌNH ---
+    function renderTab2(task) {
+      const hasWarning = Boolean(task.verificationNote);
+
+      document.getElementById('tabContent2').innerHTML = `
+        <!-- Cảnh báo kiểm chứng (Nếu có) -->
+        ${hasWarning ? `
+          <div class="bg-rose-50 border-2 border-rose-300 rounded-xl p-4 flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center font-extrabold shrink-0 text-sm">!</div>
+            <div>
+              <h4 class="text-xs font-extrabold uppercase tracking-wider text-rose-800">Cảnh báo & Lưu ý kiểm chứng (Cột M - Bắt buộc tuân thủ khi tư vấn)</h4>
+              <p class="text-xs sm:text-sm font-semibold text-rose-950 mt-1 leading-relaxed">
+                ${escapeHtml(task.verificationNote)}
+              </p>
+              <p class="text-[11px] text-rose-700 mt-1 italic">
+                * Nguyên tắc GQS: Giữ nguyên tính chính xác của văn bản, tuyệt đối không tự suy diễn mức hỗ trợ 100% hoặc ngày hết hiệu lực nếu bảng tra cứu chưa nêu.
+              </p>
+            </div>
+          </div>
+        ` : `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600">
+            ℹ️ Cột <strong>Lưu ý kiểm chứng</strong> hiện chưa ghi cảnh báo đặc biệt, tuy nhiên nhân viên kinh doanh vẫn cần đối chiếu trực tiếp văn bản gốc trước khi chốt định mức tài chính.
+          </div>
+        `}
+
+        <!-- Bảng thông số pháp lý chuẩn 14 cột -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Số văn bản (Cột G)</div>
+            <div class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(task.docNumber || 'Chưa cập nhật')}</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Ngày ban hành (Cột H)</div>
+            <div class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(task.issueDate || 'Chưa cập nhật')}</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Ngày hiệu lực tham khảo (Cột I)</div>
+            <div class="text-sm font-bold text-gqs-800 mt-0.5">${escapeHtml(task.effectiveDate || 'Chưa cập nhật')}</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Hết hạn / Phạm vi thời gian (Cột J)</div>
+            <div class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(task.expiryScope || 'Chưa nêu cụ thể trong bảng')}</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Điều / Trang tra cứu (Cột K)</div>
+            <div class="text-sm font-bold text-slate-900 mt-0.5">${escapeHtml(task.articleRef || 'Xem toàn văn')}</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="text-[11px] font-semibold text-slate-500">Đầu mối / Cơ quan (Cột F)</div>
+            <div class="text-sm font-bold text-sky-900 mt-0.5">${escapeHtml(task.agency || 'Chưa cập nhật')}</div>
+          </div>
+        </div>
+
+        <!-- Quy định / Cần nhớ (Cột C) -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-gqs-800 flex items-center gap-1.5">
+            <span>📌 Quy định / Cần nhớ (Cột C)</span>
+          </h4>
+          <div class="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-gqs-50/50 p-3.5 rounded-lg border border-gqs-100">
+            ${escapeHtml(task.regulation || 'Chưa có nội dung chi tiết trong cột C.')}
+          </div>
+        </div>
+
+        <!-- Các bước thực hiện tóm tắt (Cột D) -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800">
+            🔄 Các bước thực hiện tóm tắt (Cột D)
+          </h4>
+          <div class="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line pl-1">
+            ${escapeHtml(task.steps || 'Chưa có mô tả các bước thực hiện.')}
+          </div>
+        </div>
+      `;
+    }
+
+    // --- TAB 3: BỘ 6 CÂU HỎI KHAI THÁC NHU CẦU ---
+    function renderTab3(task, locText) {
+      const product = appState.selectedProduct || 'nông sản chủ lực';
+      const topic = task.topic.toUpperCase();
+      const customer = appState.selectedCustomerType;
+      const isGov = customer.includes('Sở') || customer.includes('Ban QLDA') || customer.includes('UBND');
+
+      // Tùy biến câu hỏi sắc bén theo đúng loại nông sản & đối tượng khách hàng
+      const q1 = isGov
+        ? `Hiện tại trên địa bàn <strong>${escapeHtml(locText)}</strong>, đơn vị mình đang ưu tiên nguồn kinh phí/kế hoạch năm nay cho nhóm sản phẩm <strong>${escapeHtml(product)}</strong> ở những xã/HTX cụ thể nào ạ?`
+        : `Hiện tại vùng nguyên liệu <strong>${escapeHtml(product)}</strong> của HTX/Doanh nghiệp mình tại <strong>${escapeHtml(locText)}</strong> có tổng diện tích bao nhiêu hecta và bao nhiêu hộ thành viên tham gia ạ?`;
+
+      const q2 = `Đối với đầu việc <strong>“${escapeHtml(task.task)}”</strong>${task.docNumber ? ` (${escapeHtml(task.docNumber)})` : ''}, đơn vị mình đã triển khai đến bước nào rồi (đang khảo sát lập dự toán, đang hoàn thiện hồ sơ minh chứng hay đã có sản phẩm cần đánh giá/chứng nhận lại)?`;
+
+      const q3 = topic.includes('OCOP') || topic.includes('HTX')
+        ? `Các sản phẩm từ <strong>${escapeHtml(product)}</strong> của mình đã có hồ sơ tự công bố chất lượng, phiếu kiểm nghiệm ATTP, bao bì nhãn mác và tem QR truy xuất nguồn gốc chuẩn hóa chưa ạ?`
+        : topic.includes('LÚA')
+        ? `Diện tích đất trồng lúa tại <strong>${escapeHtml(locText)}</strong> đã được rà soát, xác nhận danh sách hộ/HTX đủ điều kiện hưởng chính sách hỗ trợ bảo vệ đất lúa và xây dựng phương án sử dụng kinh phí chưa ạ?`
+        : `Vùng sản xuất <strong>${escapeHtml(product)}</strong> hiện đã áp dụng quy trình canh tác chuẩn (VietGAP, Hữu cơ, SRP...) hoặc được cấp mã số vùng trồng chưa ạ?`;
+
+      const q4 = `Trong quá trình chuẩn bị hồ sơ và minh chứng (như: <em>${escapeHtml(truncateText(task.documents || 'hồ sơ pháp lý, quy trình kỹ thuật, báo cáo đánh giá', 90))}</em>), Anh/Chị thấy khâu nào đang vướng nhất về mặt thủ tục hoặc nhân sự chuyên môn thực hiện ạ?`;
+
+      const q5 = isGov
+        ? `Mốc thời gian dự kiến của đơn vị mình khi nào cần hoàn thành hồ sơ trình thẩm định/nghiệm thu (ví dụ trước mốc tổng hợp báo cáo <strong>15/12</strong> hoặc theo tiến độ giải ngân quý)?`
+        : `Đơn vị mình dự kiến thời điểm nào sẽ đưa sản phẩm <strong>${escapeHtml(product)}</strong> tham gia đánh giá phân hạng / ký hợp đồng liên kết tiêu thụ để GQS lên tiến độ thực hiện kịp mùa vụ ạ?`;
+
+      const q6 = `Ngoài nội dung <strong>${escapeHtml(task.task)}</strong>, sắp tới đơn vị mình có kế hoạch kết hợp thêm về <strong>truy xuất nguồn gốc QRcode, xây dựng nhãn hiệu tập thể hay liên kết chuỗi giá trị theo NĐ 98/2018/NĐ-CP</strong> cho <strong>${escapeHtml(product)}</strong> để tối ưu nguồn lực triển khai một lần không ạ?`;
+
+      const questions = [
+        { label: 'Câu 1 • Xác định quy mô & phạm vi địa bàn', text: q1 },
+        { label: 'Câu 2 • Kiểm tra hiện trạng triển khai đầu việc', text: q2 },
+        { label: 'Câu 3 • Đánh giá mức độ sẵn sàng của nông sản / vùng nguyên liệu', text: q3 },
+        { label: 'Câu 4 • Bắt đúng "điểm nghẽn" hồ sơ & minh chứng', text: q4 },
+        { label: 'Câu 5 • Chốt mốc thời gian & áp lực tiến độ', text: q5 },
+        { label: 'Câu 6 • Mở rộng nhu cầu chuỗi giá trị (Cross-sell GQS)', text: q6 }
+      ];
+
+      document.getElementById('tabContent3').innerHTML = `
+        <div class="bg-sky-50/70 border border-sky-200 rounded-xl p-3.5 text-xs text-sky-900">
+          💡 <strong>Mục tiêu Tab 3:</strong> Đặt câu hỏi mở, bám sát đặc thù <strong>${escapeHtml(product)}</strong> tại <strong>${escapeHtml(locText)}</strong> để khách hàng tự nói ra vướng mắc về nhân sự, thủ tục hoặc tiến độ hồ sơ.
+        </div>
+        <div class="space-y-3">
+          ${questions.map((q, i) => `
+            <div class="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-gqs-400 transition shadow-2xs">
+              <div class="text-[11px] font-extrabold uppercase tracking-wide text-gqs-700 mb-1">${q.label}</div>
+              <p class="text-xs sm:text-sm text-slate-800 leading-relaxed">“${q.text}”</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // --- TAB 4: XỬ LÝ TỪ CHỐI & CÂU HỎI KHÓ ---
+    function renderTab4(task, locText) {
+      const objections = [
+        {
+          situation: '1. Khách hỏi sâu về định mức, dự toán chi tiết hoặc tỷ lệ hỗ trợ ngân sách cụ thể:',
+          script: `“Dạ đối với phần định mức và dự toán chi tiết theo <strong>${escapeHtml(task.docNumber || 'văn bản hiện hành')}</strong>, mỗi hạng mục còn phụ thuộc vào quy mô diện tích/số lượng mẫu thực tế và hướng dẫn phân bổ ngân sách của địa phương tại <strong>${escapeHtml(locText)}</strong>. Để đảm bảo chính xác tuyệt đối, em xin phép ghi nhận thông số thực tế của đơn vị mình hôm nay và chốt một buổi làm việc trực tuyến hoặc trực tiếp cùng <strong>Phòng Chuyên môn & Pháp chế của GQS</strong> (có sự tham gia của Phó Tổng Giám đốc GQS) để rà soát từng điều khoản và lên bảng dự toán chuẩn xác nhất cho Anh/Chị ạ.”`
+        },
+        {
+          situation: '2. Khách nói: “Địa phương / HTX hiện chưa bố trí được kinh phí hoặc đang chờ cấp trên duyệt”:',
+          script: `“Dạ em rất hiểu thực tế này ở các đơn vị mình ạ. Giai đoạn chờ phân bổ ngân sách lại chính là thời điểm vàng để mình chuẩn bị trước phần <strong>khung hồ sơ, danh mục minh chứng và đề cương kỹ thuật</strong>, vì khi có quyết định giao vốn thì thời gian giải ngân thường rất gấp (đặc biệt trước mốc báo cáo 15/12). GQS có thể hỗ trợ đơn vị mình rà soát miễn phí danh mục hồ sơ cần chuẩn bị trước, đồng thời tư vấn cách lồng ghép nguồn vốn từ các chương trình OCOP, NTM hoặc Nghị định 98 để đơn vị chủ động ngay khi có kinh phí ạ.”`
+        },
+        {
+          situation: '3. Khách băn khoăn: “Văn bản mới ban hành (năm 2025–2026), sợ làm sai mẫu biểu hoặc thay đổi quy định hiệu lực”:',
+          script: `“Dạ đây cũng là lý do nhiều đơn vị tại ĐBSCL chọn phối hợp với GQS ạ. Đội ngũ Pháp chế của GQS cập nhật liên tục các thông tư, quyết định mới nhất (như TT 23/2026/TT-BNNMT, QĐ 31/2026/QĐ-UBND, NQ 09/2025/NQ-HĐND...) và luôn đối chiếu kỹ từng điều khoản kiểm chứng trước khi nộp hồ sơ. Em xin phép kết nối <strong>Trưởng phòng Chuyên môn GQS</strong> cùng trao đổi kỹ thuật 15 phút với cán bộ phụ trách bên mình để thống nhất bộ mẫu biểu chuẩn ngay từ đầu ạ.”`
+        },
+        {
+          situation: '4. Khách nói: “Đã có đơn vị khác chào giá hoặc cán bộ địa phương tự làm được”:',
+          script: `“Dạ nếu cán bộ bên mình tự triển khai được các bước cơ bản thì rất tốt ạ, GQS hoàn toàn ủng hộ. Tuy nhiên, ở các khâu đòi hỏi tính chuyên sâu và liên ngành như <strong>xây dựng quy trình kỹ thuật chuẩn, thiết kế hệ thống truy xuất nguồn gốc QRcode, bảo hộ nhãn hiệu tập thể hoặc hoàn thiện minh chứng chấm điểm OCOP 4 sao</strong>, GQS có thể tham gia hỗ trợ đúng phần việc chuyên sâu đó để giảm tải áp lực cho cán bộ địa phương và đảm bảo tỷ lệ đạt thẩm định cao nhất ạ.”`
+        }
+      ];
+
+      document.getElementById('tabContent4').innerHTML = `
+        <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 flex items-center justify-between gap-2">
+          <span>🎯 <strong>Nguyên tắc vàng khi gặp câu hỏi khó:</strong> Không đoán mò định mức tài chính – Giữ vững uy tín pháp lý – Chốt lịch đưa <strong>Phòng Chuyên môn / Pháp chế / PTGĐ GQS</strong> vào làm việc bước tiếp theo.</span>
+        </div>
+
+        <div class="space-y-3">
+          ${objections.map(obj => `
+            <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-1.5">
+              <div class="text-xs font-extrabold text-rose-700">${obj.situation}</div>
+              <p class="text-xs sm:text-sm text-slate-800 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
+                ${obj.script}
+              </p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // --- TAB 5: CHECKLIST HỒ SƠ & MINH CHỨNG CHUẨN BỊ ---
+    function renderTab5(task) {
+      // Tách từng gạch đầu dòng từ cột E (CẦN CHUẨN BỊ / MINH CHỨNG) và cột D (CÁC BƯỚC THỰC HIỆN)
+      const docLines = splitLinesToChecklist(task.documents);
+      const stepLines = splitLinesToChecklist(task.steps);
+
+      document.getElementById('tabContent5').innerHTML = `
+        <!-- File PDF Gốc (Cột N) -->
+        <div class="bg-slate-900 text-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-300">Tài liệu đối chiếu gốc (Cột N - Tên file PDF gốc)</div>
+            <div class="text-xs sm:text-sm font-mono font-semibold text-white break-all">
+              📄 ${escapeHtml(task.pdfFileName || 'Chưa gắn tên file PDF cụ thể trong Sổ tay văn bảng')}
+            </div>
+          </div>
+          <a href="https://drive.google.com/drive/folders/1b_UXOG8fp-oE_E7mHbnVujItlVJyZLHC?usp=drive_link" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold transition shrink-0">
+            <span>Mở Folder PDF gốc trên Drive</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+        </div>
+
+        <!-- Checklist Minh chứng & Hồ sơ cần chuẩn bị / hỏi khách (Cột E) -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-extrabold uppercase tracking-wider text-gqs-800">
+              ✅ Checklist Hồ sơ & Minh chứng cần chuẩn bị / hỏi khách (Cột E)
+            </h4>
+            <span class="text-[11px] text-slate-500">Tick chọn trực tiếp khi đi gặp khách</span>
+          </div>
+
+          <div class="space-y-2">
+            ${docLines.length > 0 ? docLines.map((line, idx) => {
+              const checkKey = `doc_${task.id}_${idx}`;
+              const isChecked = !!appState.checkedItems[checkKey];
+              return `
+                <label class="flex items-start gap-2.5 p-2.5 rounded-lg border ${isChecked ? 'bg-emerald-50/70 border-emerald-200' : 'bg-slate-50/70 border-slate-200'} hover:border-gqs-400 cursor-pointer transition">
+                  <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheckItem('${checkKey}')" class="mt-0.5 rounded text-gqs-600 focus:ring-gqs-500 w-4 h-4 cursor-pointer" />
+                  <span class="text-xs sm:text-sm ${isChecked ? 'line-through text-slate-400' : 'text-slate-800 font-medium'} leading-snug">
+                    ${escapeHtml(line)}
+                  </span>
+                </label>
+              `;
+            }).join('') : `<p class="text-xs text-slate-500 italic">Chưa có danh mục hồ sơ cụ thể trong cột E.</p>`}
+          </div>
+        </div>
+
+        <!-- Checklist Các bước thực hiện tóm tắt (Cột D) -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+          <h4 class="text-xs font-extrabold uppercase tracking-wider text-sky-900">
+            📋 Trình tự các bước thực hiện cần trao đổi (Cột D)
+          </h4>
+          <div class="space-y-2">
+            ${stepLines.length > 0 ? stepLines.map((line, idx) => {
+              const checkKey = `step_${task.id}_${idx}`;
+              const isChecked = !!appState.checkedItems[checkKey];
+              return `
+                <label class="flex items-start gap-2.5 p-2.5 rounded-lg border ${isChecked ? 'bg-sky-50/70 border-sky-200' : 'bg-white border-slate-200'} hover:border-sky-400 cursor-pointer transition">
+                  <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheckItem('${checkKey}')" class="mt-0.5 rounded text-sky-600 focus:ring-sky-500 w-4 h-4 cursor-pointer" />
+                  <span class="text-xs sm:text-sm ${isChecked ? 'line-through text-slate-400' : 'text-slate-700'} leading-snug">
+                    ${escapeHtml(line)}
+                  </span>
+                </label>
+              `;
+            }).join('') : `<p class="text-xs text-slate-500 italic">Chưa có danh mục các bước trong cột D.</p>`}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleCheckItem(key) {
+      appState.checkedItems[key] = !appState.checkedItems[key];
+      const task = getActiveTask();
+      if (task) renderTab5(task);
+    }
+
+    // =========================================================================
+    // 12. ĐIỀU HƯỚNG TABS, COPY & IN / XUẤT PDF
+    // =========================================================================
+    function switchTab(tabNum) {
+      appState.activeTab = tabNum;
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`tabBtn${i}`);
+        const panel = document.getElementById(`tabPanel${i}`);
+        if (i === tabNum) {
+          btn.className = 'tab-btn active whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-bold border-b-2 border-gqs-600 bg-white text-gqs-800 shadow-2xs transition cursor-pointer flex items-center gap-1.5';
+          panel.classList.remove('hidden');
+        } else {
+          btn.className = 'tab-btn whitespace-nowrap px-3.5 py-2.5 rounded-t-xl text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer flex items-center gap-1.5';
+          panel.classList.add('hidden');
+        }
+      }
+    }
+
+    function getCleanTextFromElement(elId) {
+      const el = document.getElementById(elId);
+      if (!el) return '';
+      return el.innerText.replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    function copyCurrentTab() {
+      const tabTitles = [
+        '',
+        '1. LỜI CHÀO & MỞ ĐẦU (60 GIÂY)',
+        '2. CĂN CỨ CÔNG VĂN & QUY TRÌNH',
+        '3. BỘ 6 CÂU HỎI KHAI THÁC NHU CẦU',
+        '4. XỬ LÝ TỪ CHỐI & CÂU HỎI KHÓ',
+        '5. CHECKLIST HỒ SƠ & MINH CHỨNG CHUẨN BỊ'
+      ];
+      const task = getActiveTask();
+      const header = `KỊCH BẢN GẶP KHÁCH HÀNG - GQS\nĐịa bàn: ${appState.selectedDistrict ? appState.selectedDistrict + ', ' : ''}Tỉnh ${appState.selectedProvince}\nNông sản: ${appState.selectedProduct}\nĐầu việc: [${task?.topic || ''}] ${task?.task || ''}\n----------------------------------------\n${tabTitles[appState.activeTab]}\n\n`;
+      const body = getCleanTextFromElement(`tabContent${appState.activeTab}`);
+      copyToClipboard(header + body, `Đã copy nội dung ${tabTitles[appState.activeTab]}!`);
+    }
+
+    function copyAllTabs() {
+      const task = getActiveTask();
+      const tabTitles = [
+        '',
+        '1. LỜI CHÀO & MỞ ĐẦU (60 GIÂY)',
+        '2. CĂN CỨ CÔNG VĂN & QUY TRÌNH',
+        '3. BỘ 6 CÂU HỎI KHAI THÁC NHU CẦU',
+        '4. XỬ LÝ TỪ CHỐI & CÂU HỎI KHÓ',
+        '5. CHECKLIST HỒ SƠ & MINH CHỨNG CHUẨN BỊ'
+      ];
+      let fullText = `========================================\nKỊCH BẢN LÀM VIỆC KHÁCH HÀNG B2B/B2G - GQS\n========================================\n`;
+      fullText += `• Tỉnh/Thành phố: ${appState.selectedProvince}\n`;
+      if (appState.selectedDistrict) fullText += `• Huyện/Xã: ${appState.selectedDistrict}\n`;
+      fullText += `• Nông sản chủ lực: ${appState.selectedProduct}\n`;
+      fullText += `• Đối tượng gặp: ${appState.selectedCustomerType}\n`;
+      fullText += `• Đầu việc: [${task?.topic || ''}] ${task?.task || ''} (${task?.docNumber || 'N/A'})\n\n`;
+
+      for (let i = 1; i <= 5; i++) {
+        fullText += `----------------------------------------\n${tabTitles[i]}\n----------------------------------------\n`;
+        fullText += getCleanTextFromElement(`tabContent${i}`) + `\n\n`;
+      }
+
+      copyToClipboard(fullText, 'Đã copy trọn bộ 5 tab kịch bản vào bộ nhớ tạm!');
+    }
+
+    function copyToClipboard(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast(successMsg);
+      }
+    }
+
+    function printScript() {
+      window.print();
+    }
+
+    // =========================================================================
+    // 13. MODALS & UTILITIES
+    // =========================================================================
+    function openPasteModal() {
+      const modal = document.getElementById('pasteModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePasteModal() {
+      const modal = document.getElementById('pasteModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function applyPastedTsv() {
+      const raw = document.getElementById('pasteTsvTextarea').value;
+      const parsed = parseTSV(raw);
+      if (parsed.length === 0) {
+        alert('Dữ liệu dán vào chưa đúng định dạng TSV (cần có dòng tiêu đề và ít nhất 1 dòng dữ liệu phân tách bằng dấu Tab).');
+        return;
+      }
+      appState.tasks = parsed;
+      localStorage.setItem(CACHE_KEYS.tasks, raw);
+      const nowStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      localStorage.setItem(CACHE_KEYS.timestamp, nowStr);
+
+      document.getElementById('syncDot').className = 'w-2 h-2 rounded-full bg-emerald-400';
+      document.getElementById('syncText').textContent = `Đã nạp thủ công (${parsed.length} việc • ${nowStr})`;
+
+      populateTopicsDropdown();
+      filterTasksDropdown(true);
+      renderAll();
+      closePasteModal();
+      showToast(`Đã nạp thành công ${parsed.length} đầu việc từ dữ liệu TSV!`);
+    }
+
+    function openCompanyModal() {
+      const modal = document.getElementById('companyModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCompanyModal() {
+      const modal = document.getElementById('companyModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById('toastBox');
+      document.getElementById('toastMessage').textContent = msg;
+      box.classList.remove('translate-y-16', 'opacity-0');
+      setTimeout(() => {
+        box.classList.add('translate-y-16', 'opacity-0');
+      }, 3000);
+    }
+
+    function splitLinesToChecklist(text) {
+      if (!text) return [];
+      return text
+        .split(/\r?\n|;/)
+        .map(s => s.replace(/^[-•+*]\s*/, '').trim())
+        .filter(Boolean);
+    }
+
+    function truncateText(str, maxLen) {
+      if (!str) return '';
+      return str.length > maxLen ? str.slice(0, maxLen) + '...' : str;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeHtmlAttr(str) {
+      return escapeHtml(str).replace(/\\/g, '\\\\');
+    }
+
+    // =========================================================================
+    // 14. KHỞI TẠO ỨNG DỤNG KHI MỞ TRANG
+    // =========================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+      switchTab(1);
+      handleProvinceChange(); // Thiết lập mặc định Vĩnh Long + đúng nông sản Vĩnh Long
+      syncFromGoogleSheet(false); // Tự động đồng bộ TSV từ Google Sheet
+    });
+  </script>
+</body>
+</html>
